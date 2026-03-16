@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postman Test Results - REST API Basics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-label {
+            color: #666;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+
+        .success { color: #10b981; }
+        .warning { color: #f59e0b; }
+        .info { color: #3b82f6; }
+        .metric { color: #8b5cf6; }
+
+        .test-results {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .test-results h2 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .test-group {
+            margin-bottom: 30px;
+        }
+
+        .test-group-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .test-item {
+            background: #f9fafb;
+            border-left: 4px solid #10b981;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .test-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        .test-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .test-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .test-detail {
+            color: #666;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-method {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-status {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .assertions {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .assertion {
+            color: #059669;
+            margin: 5px 0;
+        }
+
+        .assertion::before {
+            content: "✓ ";
+            font-weight: bold;
+        }
+
+        .performance-chart {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .performance-chart h2 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .bar-chart {
+            margin-top: 20px;
+        }
+
+        .bar-item {
+            margin-bottom: 15px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .bar-container {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: width 1s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card, .test-results, .performance-chart {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .card-value {
+                font-size: 2em;
+            }
+            .test-details {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 API Test Results Dashboard</h1>
+            <p>REST API Basics Collection - JSONPlaceholder</p>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-icon success">✓</div>
+                <div class="card-value">100%</div>
+                <div class="card-label">Pass Rate</div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon info">📊</div>
+                <div class="card-value">12/12</div>
+                <div class="card-label">Assertions Passed</div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon warning">⚡</div>
+                <div class="card-value">130ms</div>
+                <div class="card-label">Avg Response Time</div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon metric">🚀</div>
+                <div class="card-value">887ms</div>
+                <div class="card-label">Total Duration</div>
+            </div>
+        </div>
+
+        <div class="test-results">
+            <h2>📝 Test Results Breakdown</h2>
+
+            <div class="test-group">
+                <div class="test-group-header">01 - GET Requests</div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">GET</span>
+                        Simple GET Request
+                        <span class="badge badge-success">2/2 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users</span>
+                        <span class="test-detail"><span class="badge badge-status">200 OK</span></span>
+                        <span class="test-detail">⏱️ 200ms</span>
+                        <span class="test-detail">📦 3.02kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 200</div>
+                        <div class="assertion">Response time is acceptable</div>
+                    </div>
+                </div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">GET</span>
+                        GET with Path Parameter
+                        <span class="badge badge-success">2/2 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users/1</span>
+                        <span class="test-detail"><span class="badge badge-status">200 OK</span></span>
+                        <span class="test-detail">⏱️ 39ms</span>
+                        <span class="test-detail">📦 1.65kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 200</div>
+                        <div class="assertion">Response contains user data</div>
+                    </div>
+                </div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">GET</span>
+                        GET with Query Parameters
+                        <span class="badge badge-success">2/2 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users?page=1&limit=10</span>
+                        <span class="test-detail"><span class="badge badge-status">200 OK</span></span>
+                        <span class="test-detail">⏱️ 41ms</span>
+                        <span class="test-detail">📦 3.02kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 200</div>
+                        <div class="assertion">Response is an array</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-group">
+                <div class="test-group-header">02 - POST Requests</div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">POST</span>
+                        Create User
+                        <span class="badge badge-success">3/3 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users</span>
+                        <span class="test-detail"><span class="badge badge-status">201 Created</span></span>
+                        <span class="test-detail">⏱️ 113ms</span>
+                        <span class="test-detail">📦 1.32kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 201</div>
+                        <div class="assertion">User created with ID</div>
+                        <div class="assertion">Response contains submitted data</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-group">
+                <div class="test-group-header">03 - PUT Requests</div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">PUT</span>
+                        Update User
+                        <span class="badge badge-success">2/2 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users/1</span>
+                        <span class="test-detail"><span class="badge badge-status">200 OK</span></span>
+                        <span class="test-detail">⏱️ 278ms</span>
+                        <span class="test-detail">📦 1.22kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 200</div>
+                        <div class="assertion">User updated successfully</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-group">
+                <div class="test-group-header">04 - DELETE Requests</div>
+
+                <div class="test-item">
+                    <div class="test-name">
+                        <span class="badge badge-method">DELETE</span>
+                        Delete User
+                        <span class="badge badge-success">1/1 PASSED</span>
+                    </div>
+                    <div class="test-details">
+                        <span class="test-detail">🌐 https://jsonplaceholder.typicode.com/users/1</span>
+                        <span class="test-detail"><span class="badge badge-status">200 OK</span></span>
+                        <span class="test-detail">⏱️ 112ms</span>
+                        <span class="test-detail">📦 1.11kB</span>
+                    </div>
+                    <div class="assertions">
+                        <div class="assertion">Status code is 200 or 204</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="performance-chart">
+            <h2>📈 Performance Metrics</h2>
+            <div class="bar-chart">
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Simple GET Request</span>
+                        <span>200ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 71.9%;">200ms</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>GET with Path Parameter</span>
+                        <span>39ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 14%;">39ms</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>GET with Query Parameters</span>
+                        <span>41ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 14.7%;">41ms</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Create User (POST)</span>
+                        <span>113ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 40.6%;">113ms</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Update User (PUT)</span>
+                        <span>278ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 100%;">278ms</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">
+                        <span>Delete User (DELETE)</span>
+                        <span>112ms</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: 40.3%;">112ms</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
