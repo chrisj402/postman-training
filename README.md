@@ -28,6 +28,39 @@ Postman/
 - **Workflow Chaining**: Creating end-to-end API test flows
 - **Best Practices**: Organizing collections, debugging, and optimization
 
+## 🚀 Quick Setup
+
+### Automated Installation
+
+Run the setup script to automatically install all dependencies:
+
+**Mac/Linux:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+**Windows:**
+```cmd
+setup.bat
+```
+
+The script will:
+- ✅ Check for Node.js and npm
+- ✅ Install Newman (Postman CLI)
+- ✅ Install Newman HTML Reporter
+- ✅ Validate collection files
+- ✅ Run a verification test
+- ✅ Provide next steps
+
+### Manual Installation
+
+If you prefer manual setup:
+
+1. Install Node.js from [nodejs.org](https://nodejs.org/)
+2. Install Newman: `npm install -g newman`
+3. Install Postman Desktop from [postman.com/downloads](https://www.postman.com/downloads/)
+
 ## 🧪 Running Tests
 
 ### Command Line Testing
