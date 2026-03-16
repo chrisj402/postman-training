@@ -7,6 +7,7 @@ A comprehensive, hands-on framework for learning and mastering API testing with 
 ```
 Postman/
 ├── README.md                              # This file
+├── test-results.html                      # Visual dashboard for test results
 ├── collections/
 │   └── 01-basics/
 │       └── rest-api-basics.json          # Fundamental REST API requests with tests
@@ -26,6 +27,28 @@ Postman/
 - **Response Validation**: Status codes, headers, JSON structure
 - **Workflow Chaining**: Creating end-to-end API test flows
 - **Best Practices**: Organizing collections, debugging, and optimization
+
+## 🧪 Running Tests
+
+### Command Line Testing
+
+Run the complete test suite using Newman (Postman's CLI runner):
+
+```bash
+# Install Newman globally
+npm install -g newman
+
+# Run all tests
+newman run collections/01-basics/rest-api-basics.json --environment environments/training-local.json
+```
+
+### Visual Test Results
+
+After running tests, open `test-results.html` in your browser to see an interactive dashboard with:
+- 📊 Summary metrics (pass rate, assertions, response times)
+- 📝 Detailed test breakdown by HTTP method
+- 📈 Performance visualization with bar charts
+- ✅ All assertions and their results
 
 ## 🚀 Quick Start
 
